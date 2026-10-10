@@ -4,6 +4,7 @@ import com.example.DuckDuck.global.security.jwt.JwtTokenProvider;
 import com.example.DuckDuck.global.security.jwt.JwtAuthenticationFilter;
 import com.example.DuckDuck.global.security.oauth.CustomOAuth2UserService;
 import com.example.DuckDuck.global.security.oauth.OAuth2SuccessHandler;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +49,8 @@ public class SecurityConfig {
 
                 //요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        // SSE(SseEmitter) 완료 시 ASYNC 재디스패치는 최초 요청에서 이미 인증됨
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
