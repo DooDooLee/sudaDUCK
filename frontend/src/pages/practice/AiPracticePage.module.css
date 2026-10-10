@@ -53,10 +53,9 @@
 }
 
 .HeaderRow {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: clamp(10px, 1.5vw, 14px);
+  min-height: clamp(36px, 4vw, 40px);
   padding-bottom: clamp(8px, 1vw, 10px);
 }
 
@@ -65,347 +64,587 @@
   align-items: center;
 }
 
-.TopicRow {
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 1.5vw, 14px);
-  min-width: 0;
-}
-
-.TimerCol {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.SmallDuck {
-  width: clamp(48px, 6vw, 56px);
-  height: clamp(48px, 6vw, 56px);
-  object-fit: contain;
-}
-
-.TopicBubble {
-  background: #ffffff;
-  border: 1px solid #e8edf6;
-  border-radius: clamp(12px, 1.5vw, 16px);
-  padding: clamp(10px, 1.2vw, 12px) clamp(12px, 1.5vw, 16px);
-  font-size: 14px;
-  font-weight: 900;
-  color: #111827;
-  box-shadow: 0 14px 26px rgba(17, 24, 39, 0.10);
-  white-space: nowrap;
-}
-
 .TopicHighlight {
   color: #2b7fff;
   font-weight: 900;
   padding: 0 2px;
 }
 
-.Stage {
-  margin-top: clamp(14px, 2vw, 18px);
-  display: grid;
-  grid-template-columns: clamp(340px, 38vw, 400px) 1fr;
-  gap: clamp(24px, 3vw, 32px);
-  align-items: center;
-}
+/* ===== 채팅 패널 ===== */
 
-.LeftStage {
+.ChatPanel {
+  width: min(780px, 100%);
+  margin: clamp(4px, 1vw, 8px) auto 0;
+  height: clamp(460px, 64vh, 720px);
   display: flex;
   flex-direction: column;
+  border-radius: clamp(16px, 2vw, 22px);
+  border: 1px solid #e8edf6;
+  background: #f3f6fd;
+  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+}
+
+.ChatTopBar {
+  display: flex;
   align-items: center;
-}
-
-.VideoArea {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: clamp(20px, 3vw, 28px) 0 clamp(16px, 2vw, 20px);
-}
-
-.CardsGrid {
-  width: 100%;
-  max-width: clamp(340px, 38vw, 400px);
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(14px, 2vw, 18px);
-}
-
-.VideoCard {
-  height: clamp(180px, 22vw, 220px);
-  border-radius: clamp(12px, 1.5vw, 14px);
-  background: #fbfcff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(14px, 2vw, 18px) clamp(14px, 2vw, 18px) clamp(12px, 1.5vw, 14px);
-  border: 2px solid rgba(229, 231, 235, 1);
-  position: relative;
-}
-
-.VideoCardSpeaking {
-  border-color: rgba(34, 197, 94, 0.95);
-  box-shadow:
-    0 0 0 3px rgba(34, 197, 94, 0.18),
-    0 0 22px rgba(34, 197, 94, 0.30),
-    0 18px 34px rgba(17, 24, 39, 0.12);
-}
-
-.VideoCardSpeaking::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 16px;
-  pointer-events: none;
-  box-shadow:
-    0 0 28px rgba(34, 197, 94, 0.28),
-    0 0 10px rgba(34, 197, 94, 0.18);
-}
-
-.VideoCardIdle {
-  border-color: rgba(229, 231, 235, 1);
-  box-shadow: none;
-}
-
-.VideoCardAi {
-  border-color: rgba(229, 231, 235, 1);
-  background: #fbfcff;
-}
-
-.VideoInner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-}
-
-.AvatarCircle {
-  width: clamp(100px, 13vw, 130px);
-  height: clamp(100px, 13vw, 130px);
-  border-radius: 999px;
+  gap: 12px;
+  padding: 12px 18px;
   background: #ffffff;
-  border: 1px solid #eef2ff;
-  box-shadow: 0 14px 26px rgba(17, 24, 39, 0.10);
+  border-bottom: 1px solid #e8edf6;
+}
+
+.TopBarAvatar {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 16px;
+  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
-.AvatarDuck {
-  width: clamp(64px, 8.5vw, 84px);
-  height: clamp(64px, 8.5vw, 84px);
+.TopBarAvatar img {
+  width: 38px;
+  height: 38px;
   object-fit: contain;
 }
 
-.VideoFooter {
+.TopBarText {
+  min-width: 0;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
 }
 
-.VideoFooterLeft {
+.TopBarName {
   display: inline-flex;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.MeLabel {
-  font-size: 13px;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
   font-weight: 900;
   color: #111827;
+  line-height: 1.3;
 }
 
-.AiLabel {
+.StatusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.95);
+}
+
+.StatusDotBusy {
+  background: #f59e0b;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.TopBarTopic {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.MessageList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scroll-behavior: smooth;
+}
+
+.EmptyHint {
+  margin: auto;
   font-size: 13px;
-  font-weight: 900;
-  color: #111827;
-  opacity: 0.95;
+  font-weight: 700;
+  color: #9ca3af;
 }
 
-.VideoFooterRight {
-  display: inline-flex;
-  align-items: flex-end;
+.Row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  animation: rise 0.22s ease-out;
+}
+
+.RowGroupStart {
+  margin-top: 10px;
+}
+
+.Row:first-child {
+  margin-top: 0;
+}
+
+.RowBot {
+  justify-content: flex-start;
+}
+
+.RowUser {
   justify-content: flex-end;
 }
 
-.MicMini {
-  width: 18px;
-  height: 18px;
+.AvatarSlot {
+  width: 40px;
+  flex: none;
+}
+
+.BotAvatar,
+.UserAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #e8edf6;
+}
+
+.BotAvatar {
+  background: #ffffff;
+}
+
+.UserAvatar {
+  background: #fff7d6;
+}
+
+.BotAvatar img,
+.UserAvatar img {
+  width: 34px;
+  height: 34px;
   object-fit: contain;
 }
 
-.Wave {
-  display: inline-flex;
+.BotCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: calc(100% - 48px);
+}
+
+.SenderName {
+  font-size: 12px;
+  font-weight: 800;
+  color: #4b5563;
+  margin: 0 0 4px 2px;
+}
+
+.BubbleLine {
+  display: flex;
   align-items: flex-end;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.RowUser .BubbleLine {
+  max-width: calc(100% - 48px);
+  justify-content: flex-end;
+}
+
+.Bubble {
+  position: relative;
+  max-width: min(460px, 100%);
+  padding: 9px 13px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: break-word;
+  white-space: pre-wrap;
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.BubbleBot {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e8edf6;
+  box-shadow: 0 2px 6px rgba(17, 24, 39, 0.04);
+}
+
+.BubbleBotTail {
+  border-top-left-radius: 4px;
+}
+
+.BubbleUser {
+  background: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.22);
+}
+
+.BubbleUserTail {
+  border-top-right-radius: 4px;
+}
+
+.BubbleText {
+  display: block;
+}
+
+.BubbleError {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+.BubbleText + .BubbleError {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.Time {
+  flex: none;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  line-height: 1;
+  padding-bottom: 3px;
+}
+
+.Typing {
+  display: inline-flex;
+  align-items: center;
   gap: 4px;
-  height: 28px;
+  height: 20px;
+  padding: 0 2px;
 }
 
-.WaveBar {
-  width: 5px;
-  border-radius: 3px;
-  transition: height 80ms ease-out;
+.TypingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #a5b4fc;
+  animation: blink 1.2s ease-in-out infinite;
 }
 
-.WaveOn .WaveBar {
-  opacity: 0.95;
+.TypingDot:nth-child(2) {
+  animation-delay: 0.15s;
 }
 
-.WaveOff .WaveBar {
-  background: rgba(209, 213, 219, 1);
-  opacity: 1;
+.TypingDot:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
-.WaveBar1 { background: rgba(34, 197, 94, 0.95); }
-.WaveBar2 { background: rgba(16, 185, 129, 0.95); }
-.WaveBar3 { background: rgba(59, 130, 246, 0.95); }
-.WaveBar4 { background: rgba(99, 102, 241, 0.95); }
-.WaveBar5 { background: rgba(158, 67, 242, 0.95); }
-.WaveBar6 { background: rgba(59, 130, 246, 0.95); }
-.WaveBar7 { background: rgba(16, 185, 129, 0.95); }
+/* ===== 입력창 ===== */
+
+.Composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border-top: 1px solid #e8edf6;
+}
+
+.MicWrap {
+  display: inline-flex;
+  flex: none;
+}
+
+.MicButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.MicButton img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.MicButton:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.MicButtonOn {
+  border-color: rgba(34, 197, 94, 0.95);
+  background: #f0fdf4;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  animation: micPulse 1.4s ease-in-out infinite;
+}
+
+.MicButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.Input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  min-height: 40px;
+  max-height: 120px;
+  padding: 9px 14px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.Input:focus {
+  border-color: rgba(79, 70, 229, 0.55);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.10);
+}
+
+.Input::placeholder {
+  color: #9ca3af;
+}
+
+.Input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.SendButton {
+  flex: none;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #4f46e5;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.SendButton:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.SendButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===== 하단 버튼 ===== */
 
 .BottomActions {
-  margin-top: 6px;
+  margin-top: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
 }
 
-.ButtonIcon {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-}
-
 .PrimaryButton {
-  height: 38px;
-  padding: 0 16px;
+  height: 40px;
+  padding: 0 20px;
   border-radius: 10px;
   border: 1px solid #4f46e5;
   background: #4f46e5;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
 }
 
+.PrimaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .SecondaryButton {
-  height: 38px;
+  height: 40px;
   padding: 0 16px;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
   background: #ffffff;
   color: #111827;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
 }
 
-.RightStage {
-  position: relative;
-  height: 100%;
-  min-height: clamp(420px, 52vw, 520px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(16px, 2vw, 20px);
+.SecondaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
-.AiSpeechBubble {
-  position: relative;
-  background: #ffffff;
-  border: 2px solid rgba(79, 70, 229, 0.25);
-  border-radius: clamp(18px, 2.5vw, 24px);
-  padding: clamp(20px, 2.5vw, 24px) clamp(24px, 3vw, 28px);
-  box-shadow: 0 20px 50px rgba(17, 24, 39, 0.16);
-  max-width: clamp(380px, 48vw, 450px);
-  width: 100%;
-  z-index: 2;
-  margin-bottom: clamp(-40px, -5vw, -50px);
-}
-
-.AiSpeechDot {
-  font-size: 13px;
-  font-weight: 900;
-  color: #4f46e5;
-  text-align: center;
-  margin-bottom: 12px;
-}
-
-.AiSpeechText {
-  font-size: 16px;
-  font-weight: 800;
-  color: #111827;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.AiSpeechBubble::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -12px;
-  width: 22px;
-  height: 22px;
-  background: #ffffff;
-  border-right: 2px solid rgba(79, 70, 229, 0.25);
-  border-bottom: 2px solid rgba(79, 70, 229, 0.25);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.BigDuck {
-  position: relative;
-  width: clamp(280px, 38vw, 380px);
-  height: clamp(280px, 38vw, 380px);
-  object-fit: contain;
-  z-index: 1;
-  filter: drop-shadow(0 20px 40px rgba(17, 24, 39, 0.14));
-}
-
-.CountdownOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(17, 24, 39, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.CountdownModal {
-  width: min(320px, 86vw);
-  background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 18px 50px rgba(17, 24, 39, 0.18);
-  padding: 18px 18px 16px;
-  text-align: center;
-}
-
-.CountdownTitle {
-  font-size: 13px;
-  font-weight: 900;
-  color: #111827;
-}
-
-.CountdownNumber {
+.ShadowingNotice {
   margin-top: 10px;
-  font-size: 46px;
-  font-weight: 900;
-  color: #4f46e5;
-  letter-spacing: -0.6px;
-}
-
-.CountdownHint {
-  margin-top: 6px;
+  text-align: center;
   font-size: 12px;
   font-weight: 700;
   color: #6b7280;
+}
+
+/* ===== 주제 바꾸기 / 시작 실패 ===== */
+
+.TopicChangeButton {
+  margin-left: auto;
+  flex: none;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.TopicChangeButton:hover:not(:disabled) {
+  border-color: rgba(79, 70, 229, 0.45);
+  background: #eef2ff;
+}
+
+.TopicChangeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.StartError {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* ===== [DEV] 백엔드 전환 ===== */
+
+.DevBar {
+  padding: 8px 14px 7px;
+  background: #fbfcff;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.DevBarRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.DevBadge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #b45309;
+  background: #fef3c7;
+  border-radius: 6px;
+  padding: 1px 6px;
+  letter-spacing: 0.4px;
+}
+
+.Segmented {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 999px;
+  background: #eef2ff;
+}
+
+.SegmentButton {
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.SegmentButton:hover:not(:disabled):not(.SegmentActive) {
+  color: #4f46e5;
+}
+
+.SegmentActive {
+  background: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.SegmentButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.DevTarget {
+  font-size: 11px;
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+.DevCaption {
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+/* ===== 애니메이션 ===== */
+
+@keyframes blink {
+  0%, 60%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18); }
+  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.10); }
 }
 
 /* 중형 화면 (1024px ~ 1440px) */
@@ -420,15 +659,6 @@
   .Shell {
     max-width: min(900px, 90vw);
   }
-
-  .Content {
-    padding: clamp(16px, 2.2vw, 24px) clamp(14px, 2.2vw, 28px) clamp(20px, 2.5vw, 24px);
-  }
-
-  .Stage {
-    grid-template-columns: clamp(300px, 35vw, 360px) 1fr;
-    gap: clamp(18px, 2.5vw, 24px);
-  }
 }
 
 /* 작은 태블릿 (600px ~ 768px) */
@@ -440,81 +670,10 @@
   .Content {
     padding: 18px 16px 20px;
   }
-
-  .HeaderRow {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .TimerCol {
-    justify-content: flex-start;
-  }
-
-  .Stage {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .CardsGrid {
-    max-width: 100%;
-  }
-
-  .RightStage {
-    min-height: 380px;
-    padding: 16px;
-  }
-
-  .AiSpeechBubble {
-    max-width: 340px;
-    padding: 18px 22px;
-    margin-bottom: -40px;
-  }
-
-  .BigDuck {
-    width: 260px;
-    height: 260px;
-  }
 }
 
-/* 모바일 화면 (480px ~ 600px) */
+/* 모바일 화면 (~ 600px) */
 @media (max-width: 600px) {
-  .Page {
-    padding: clamp(8px, 1.5vh, 16px) clamp(6px, 1vw, 12px);
-  }
-
-  .Shell {
-    max-width: 98vw;
-    border-radius: clamp(12px, 1.5vw, 20px);
-  }
-
-  .Content {
-    padding: 16px 14px 18px;
-  }
-
-  .VideoCard {
-    height: clamp(160px, 20vw, 180px);
-  }
-
-  .RightStage {
-    min-height: 340px;
-    padding: 14px;
-  }
-
-  .AiSpeechBubble {
-    max-width: 300px;
-    padding: 16px 20px;
-    margin-bottom: -36px;
-  }
-
-  .BigDuck {
-    width: 240px;
-    height: 240px;
-  }
-}
-
-/* 작은 모바일 (~ 480px) */
-@media (max-width: 480px) {
   .Page {
     padding: 8px 4px;
   }
@@ -525,51 +684,46 @@
   }
 
   .Content {
-    padding: 14px 12px 16px;
+    padding: 14px 10px 16px;
   }
 
-  .SmallDuck {
-    width: 44px;
-    height: 44px;
+  .ChatPanel {
+    height: clamp(420px, 70vh, 640px);
+    border-radius: 14px;
   }
 
-  .TopicBubble {
-    font-size: 11px;
-    padding: 9px 12px;
+  .MessageList {
+    padding: 14px 10px 10px;
   }
 
-  .VideoCard {
-    height: 150px;
-    padding: 12px;
+  .AvatarSlot,
+  .BotAvatar,
+  .UserAvatar {
+    width: 34px;
   }
 
-  .AvatarCircle {
-    width: 90px;
-    height: 90px;
+  .BotAvatar,
+  .UserAvatar {
+    height: 34px;
+    border-radius: 13px;
   }
 
-  .AvatarDuck {
-    width: 58px;
-    height: 58px;
+  .BotAvatar img,
+  .UserAvatar img {
+    width: 28px;
+    height: 28px;
   }
 
-  .RightStage {
-    min-height: 300px;
-    padding: 12px;
+  .BotCol,
+  .RowUser .BubbleLine {
+    max-width: calc(100% - 42px);
   }
 
-  .AiSpeechBubble {
-    max-width: 280px;
-    padding: 14px 18px;
-    margin-bottom: -32px;
+  .Bubble {
+    font-size: 13px;
   }
 
-  .AiSpeechText {
-    font-size: 14px;
-  }
-
-  .BigDuck {
-    width: 220px;
-    height: 220px;
+  .SendButton {
+    padding: 0 12px;
   }
 }

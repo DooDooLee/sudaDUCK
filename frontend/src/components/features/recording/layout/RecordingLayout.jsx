@@ -63,6 +63,7 @@ export default function RecordingLayout({
                   korean={card.korean}
                   english={card.english}
                   blankWords={card.blankWords}
+                  similarPhrases={card.similarPhrases}
                   score={card.score}
                   averageScore={card.averageScore}
                   isActive={card.isActive}

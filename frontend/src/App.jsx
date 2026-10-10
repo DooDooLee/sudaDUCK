@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { OpenViduProvider } from "@/context/OpenViduContext";
 import { SoundProvider } from "@/context/SoundContext";
 import useClickSound from "@/hooks/useClickSound";
@@ -20,6 +20,11 @@ import MyPage from "./pages/mypage/MyPage";
 import MiniGame1Page from "./pages/minigame/MiniGame1Page";
 import MiniGame2Page from "./pages/minigame/MiniGame2Page";
 import VoiceRoom from "./pages/together/VoiceRoom";
+
+// [DEV ONLY] 로컬 테스트 로그인 (프로덕션 빌드에서는 제외됨)
+const DevLoginPage = import.meta.env.DEV
+  ? lazy(() => import("./pages/auth/DevLoginPage"))
+  : null;
 
 function AppContent() {
   useEffect(() => {
@@ -65,6 +70,19 @@ function AppContent() {
       <Route path="/minigame2" element={<MiniGame2Page />} />
 
       <Route path="/test" element={<VoiceRoom />} />
+
+      {DevLoginPage && (
+        <Route
+          path="/dev-login"
+          element={
+            <Suspense fallback={null}>
+              <DevLoginPage />
+            </Suspense>
+          }
+        />
+      )}
+      {/* /login 라우트는 원래 없음. 토큰 갱신 실패 시 여기로 튕기므로 개발 중엔 dev 로그인으로, 그 외엔 랜딩으로 */}
+      <Route path="/login" element={<Navigate to={DevLoginPage ? "/dev-login" : "/"} replace />} />
     </Routes>
   );
 

@@ -10,11 +10,10 @@ export default function ModeSelectSection({ onClickPractice, onClickTogether }) 
   const cards = [
     {
       id: "practice",
-      title: "연습 모드",
-      description: "편하게 연습하고 실력을 쌓아보세요",
+      title: "싱글 모드",
+      description: "AI 수덕과 한국어로 수다 떨고 쉐도잉까지",
       variant: "practice",
-      disabled: true,
-      disabledMessage: "아직 오픈 예정입니다 👀",
+      disabled: false,
       action: onClickPractice
     },
     {
