@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll() //swagger 관련 주소 모두 허용
+                        .requestMatchers("/actuator/**").permitAll() // Prometheus 수집용
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/oauth2/**",

@@ -36,7 +36,13 @@ public class GptService {
     @Value("${openai.model:gpt-4o-mini}")
     private String model;
 
-    private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+    // 부하 테스트 때 mock 서버로 돌릴 수 있도록 base URL 을 설정으로 뺀다
+    @Value("${openai.api.base-url:https://api.openai.com}")
+    private String openAiBaseUrl;
+
+    private String chatCompletionsUrl() {
+        return openAiBaseUrl + "/v1/chat/completions";
+    }
 
     /**
      * 방 생성 시 주제 추천
@@ -271,7 +277,7 @@ public class GptService {
         }
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<Map> response = restTemplate.postForEntity(OPENAI_URL, entity, Map.class);
+        ResponseEntity<Map> response = restTemplate.postForEntity(chatCompletionsUrl(), entity, Map.class);
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
@@ -343,6 +349,6 @@ public class GptService {
             return full.toString();
         };
 
-        return restTemplate.execute(OPENAI_URL, HttpMethod.POST, requestCallback, responseExtractor);
+        return restTemplate.execute(chatCompletionsUrl(), HttpMethod.POST, requestCallback, responseExtractor);
     }
 }
