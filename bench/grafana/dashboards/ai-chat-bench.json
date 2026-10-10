@@ -32,7 +32,7 @@
   "panels": [
     {
       "type": "timeseries",
-      "title": "요청 처리율 (A vs B, 초당 요청)",
+      "title": "초당 처리 요청 · 기존 vs 개선",
       "description": "AI 채팅 API(/api/v1/ai-chat/**) 처리 완료 건수의 초당 비율.",
       "datasource": {
         "type": "prometheus",
@@ -56,7 +56,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -112,7 +137,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -168,7 +218,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -220,7 +295,7 @@
     },
     {
       "type": "timeseries",
-      "title": "chatTaskExecutor (A)",
+      "title": "기존 @Async 스레드 풀 (A) · 활성 스레드 / 큐 / 풀 크기",
       "description": "A 의 GPT 호출 비동기 풀 (core 5, max 10, queue 100, 초과 시 CallerRuns).",
       "datasource": {
         "type": "prometheus",
@@ -244,7 +319,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -296,7 +396,7 @@
     },
     {
       "type": "timeseries",
-      "title": "JVM 스레드 수 (A vs B)",
+      "title": "JVM 스레드 수 · 기존 vs 개선",
       "description": "살아 있는 JVM 스레드 수.",
       "datasource": {
         "type": "prometheus",
@@ -320,7 +420,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -376,7 +501,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -432,7 +582,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -488,7 +663,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -564,7 +764,32 @@
           },
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duckduck-tomcat"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "기존 (톰캣 · @Async)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chat-webflux"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "개선 (WebFlux)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
