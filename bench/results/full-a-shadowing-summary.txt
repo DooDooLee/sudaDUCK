@@ -1,0 +1,7 @@
+[full-a] shadowing @ http://localhost:18080  (실행 278.6s, 최대 VU 100)
+name            reqs    req/s    failed   wait p50  wait p95  wait p99  dur p50   dur p95   dur p99   
+create_session  353     1.27     0.00%    4ms       9ms       12ms      4ms       10ms      12ms      
+send_message    706     2.53     0.00%    7348ms    14547ms   16120ms   7682ms    14885ms   16458ms   
+shadowing       350     1.26     0.00%    13475ms   16303ms   17136ms   13475ms   16303ms   17136ms   
+전체: 1411 req (5.06 req/s), 실패 0.00%, checks 2465/2465 통과, iterations 349 (1.25/s)
+wait = http_req_waiting (첫 바이트까지), dur = http_req_duration (스트림 끝까지)

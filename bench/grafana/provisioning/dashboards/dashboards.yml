@@ -1,0 +1,11 @@
+# /var/lib/grafana/dashboards 의 JSON 을 대시보드로 등록한다 (compose 에서 ./grafana/dashboards 를 마운트)
+apiVersion: 1
+providers:
+  - name: ai-chat-bench
+    folder: ""
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards

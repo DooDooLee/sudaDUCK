@@ -1,0 +1,6 @@
+[full2-a] chat @ http://localhost:18080  (실행 326.6s, 최대 VU 800)
+name            reqs    req/s    failed   wait p50  wait p95  wait p99  dur p50   dur p95   dur p99   
+create_session  22302   68.28    0.00%    11ms      856ms     1054ms    11ms      857ms     1055ms    
+send_message    22302   68.28    0.00%    1068ms    10875ms   13026ms   1070ms    11199ms   13395ms   
+전체: 44606 req (136.57 req/s), 실패 0.00%, checks 66906/66906 통과, iterations 22302 (68.28/s)
+wait = http_req_waiting (첫 바이트까지), dur = http_req_duration (스트림 끝까지)

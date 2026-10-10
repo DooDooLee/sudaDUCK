@@ -1,0 +1,13 @@
+{
+  "name": "mock-gpt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mock OpenAI chat/completions server for load testing (no dependencies)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
