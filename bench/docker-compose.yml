@@ -133,11 +133,20 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
       GF_USERS_DEFAULT_THEME: dark
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ai-chat-bench.json
+      # 패널을 PNG 로 내보내기 위한 렌더러 (포폴 캡처용)
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3000:3000"
+
+  # Grafana 패널 PNG 렌더러
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    environment:
+      ENABLE_METRICS: "false"
     depends_on:
       - prometheus
 

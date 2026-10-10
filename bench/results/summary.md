@@ -63,7 +63,7 @@ k6 는 컨테이너 밖(호스트)에서 실행. A 와 B 는 따로 측정. 실�
 ## 파일
 - k6 요약: `full2-a-chat-*`, `full2-b-chat-*`, `full-a-shadowing-*`, `full-b-shadowing-*`
 - 구간별: `full2-*-chat-k6-per-stage.md`(손님 쪽), `full-*-chat-per-stage.md`(서버 쪽)
-- Grafana 캡처: `grafana/*.jpg` (A 구간과 B 구간이 한 시간축에 이어서 찍힘)
+- Grafana 캡처: `grafana/*.png` (Grafana 렌더러로 내보낸 패널. A 구간과 B 구간이 한 시간축에 이어서 찍힘)
 - mock 지연 근거: `openai-latency.md`
 
 ## 3. 실 API 소규모 검증 (동시 10명, 60초, 진짜 OpenAI gpt-4o-mini)
