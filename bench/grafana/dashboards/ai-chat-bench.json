@@ -45,8 +45,8 @@
           "type": "grafana",
           "uid": "-- Grafana --"
         },
-        "enable": true,
-        "hide": false,
+        "enable": false,
+        "hide": true,
         "iconColor": "#c2410c",
         "name": "기존 서버 측정 구간",
         "target": {
@@ -63,8 +63,8 @@
           "type": "grafana",
           "uid": "-- Grafana --"
         },
-        "enable": true,
-        "hide": false,
+        "enable": false,
+        "hide": true,
         "iconColor": "#1d4ed8",
         "name": "개선 서버 측정 구간",
         "target": {
@@ -887,6 +887,128 @@
         }
       ],
       "id": 9
+    },
+    {
+      "type": "timeseries",
+      "title": "JVM 스레드 수, 기존 서버 (톰캣, @Async)",
+      "description": "살아 있는 JVM 스레드 수.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "min": 0,
+          "max": 260,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#c2410c"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "refId": "A",
+          "expr": "jvm_threads_live_threads{application=\"duckduck-tomcat\"}",
+          "legendFormat": "기존",
+          "range": true
+        }
+      ],
+      "id": 10
+    },
+    {
+      "type": "timeseries",
+      "title": "JVM 스레드 수, 개선 서버 (WebFlux)",
+      "description": "살아 있는 JVM 스레드 수.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "min": 0,
+          "max": 260,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#1d4ed8"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "refId": "A",
+          "expr": "jvm_threads_live_threads{application=\"chat-webflux\"}",
+          "legendFormat": "개선",
+          "range": true
+        }
+      ],
+      "id": 11
     }
   ]
 }
