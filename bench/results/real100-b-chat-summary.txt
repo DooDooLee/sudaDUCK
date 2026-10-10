@@ -1,0 +1,6 @@
+[real100-b] chat @ http://localhost:8081  (실행 126.5s, 최대 VU 100)
+name            reqs    req/s    failed   wait p50  wait p95  wait p99  dur p50   dur p95   dur p99   
+create_session  3412    26.98    0.00%    2ms       3ms       4ms       2ms       3ms       4ms       
+send_message    3412    26.98    0.00%    584ms     784ms     950ms     815ms     1075ms    1315ms    
+전체: 6826 req (53.97 req/s), 실패 0.00%, checks 10236/10236 통과, iterations 3412 (26.98/s)
+wait = http_req_waiting (첫 바이트까지), dur = http_req_duration (스트림 끝까지)

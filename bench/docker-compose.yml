@@ -1,0 +1,154 @@
+# AI 채팅 부하 테스트 스택. A(Tomcat) 와 B(WebFlux) 를 같은 조건(CPU 2개, 메모리 1.5GB)으로 띄운다.
+# 사용법: cd bench && docker compose up -d --build   (JWT_SECRET 은 bench/.env 에서 읽는다)
+# 호스트 포트는 로컬 개발 인스턴스(8080, 8081, 6379)와 겹치지 않게 1xxxx 대역을 쓴다.
+name: sudaduck-bench
+
+x-app-limits: &app-limits
+  # A 와 B 에 똑같이 거는 자원 제한
+  cpus: "2.0"
+  mem_limit: 1536m
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: duckduck
+      TZ: Asia/Seoul
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    healthcheck:
+      # 127.0.0.1(TCP)로 확인해야 초기화용 임시 서버(소켓 전용) 단계를 건너뛴다
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-ppassword", "--silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  mock-gpt:
+    build: ./mock-gpt
+    environment:
+      # 실측 근거는 results/openai-latency.md
+      FIRST_TOKEN_MS: "700"
+      TOKEN_COUNT: "30"
+      TOKEN_INTERVAL_MS: "10"
+      SCRIPT_MS: "1300"
+    ports:
+      - "19000:9000"
+
+  app-a:
+    build:
+      context: ../backend
+      # backend/Dockerfile 의 alpine JDK 는 arm64 이미지가 없어 벤치 전용 Dockerfile 을 쓴다
+      dockerfile: ../bench/docker/app-a.Dockerfile
+    <<: *app-limits
+    working_dir: /app
+    volumes:
+      # Spring Boot 는 작업 디렉터리의 ./config/application.yaml 을 읽는다
+      - ./config/app-a.yaml:/app/config/application.yaml:ro
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx1g -XX:+UseContainerSupport"
+      JWT_SECRET: ${JWT_SECRET:?bench/.env 에 JWT_SECRET 을 넣어야 한다}
+      DB_HOST: mysql
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      OPENAI_BASE_URL: http://mock-gpt:9000
+      OPENAI_API_KEY: dummy
+      OPENAI_MODEL: gpt-4o-mini
+      TZ: Asia/Seoul
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mock-gpt:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+    ports:
+      - "18080:8080"
+
+  app-b:
+    build: ../ai-chat
+    <<: *app-limits
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx1g -XX:+UseContainerSupport"
+      JWT_SECRET: ${JWT_SECRET:?bench/.env 에 JWT_SECRET 을 넣어야 한다}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      OPENAI_BASE_URL: http://mock-gpt:9000
+      OPENAI_API_KEY: dummy
+      OPENAI_MODEL: gpt-4o-mini
+      # A 와 같이 서버 측 응답 시간 히스토그램 버킷을 노출한다 (소스 수정 없이 환경변수로)
+      MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILESHISTOGRAM_HTTP_SERVER_REQUESTS: "true"
+      TZ: Asia/Seoul
+    depends_on:
+      redis:
+        condition: service_healthy
+      mock-gpt:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://127.0.0.1:8081/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+    ports:
+      - "18081:8081"
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app-a
+      - app-b
+      - mock-gpt
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    environment:
+      # 로그인 없이 바로 대시보드를 연다 (로컬 전용)
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_USERS_DEFAULT_THEME: dark
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ai-chat-bench.json
+      # 패널을 PNG 로 내보내기 위한 렌더러 (포폴 캡처용)
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+
+  # Grafana 패널 PNG 렌더러
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    environment:
+      ENABLE_METRICS: "false"
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:

@@ -83,7 +83,7 @@ export default function MainPage() {
   }, []);
 
   const handlePractice = () => {
-    navigate("/practice");
+    navigate("/practice/ai");
   };
 
   const handleTogether = () => {

@@ -1,0 +1,6 @@
+# 로컬 비밀값(.env)과 빌드 산출물은 이미지 빌드 컨텍스트에서 뺀다
+.env
+.gradle
+build
+out
+.idea

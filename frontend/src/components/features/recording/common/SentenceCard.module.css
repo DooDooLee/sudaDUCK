@@ -296,6 +296,33 @@
   word-spacing: 0.5px;
 }
 
+/* 비슷한 표현 (AI 모드) */
+.similarSection {
+  padding: 8px 14px 10px;
+  border-radius: 10px;
+  border: 1px dashed #dbe4f3;
+  background: #fbfcff;
+}
+
+.similarList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.similarItem {
+  font-size: clamp(12px, 1.3vw, 14px);
+  line-height: 1.4;
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
 .blank {
   color: #2b7fff;
   font-weight: 700;

@@ -120,6 +120,33 @@ const DUMMY_CONVERSATIONS = {
   3: [],
 };
 
+// AI 싱글 모드 스크립트 -> 화면용 문장 포맷 (멀티 모드와 같은 형태, 대화 순서 유지)
+const REGEX_UNSAFE = /[()[\]{}*+?\\|^$]/;
+function formatAiScripts(scripts) {
+  return scripts.map((s, i) => ({
+    id: i + 1,
+    scriptId: `ai-${i}`,
+    // role: "user" | "assistant" (없으면 사용자로 간주)
+    speaker: s.role === "assistant" ? "수덕" : "나",
+    role: s.role === "assistant" ? "assistant" : "user",
+    korean: s.korean || "",
+    english: s.en || s.english || "",
+    blankWords: s.blank_script
+      ? (s.blank_script.match(/\[([^\]]+)\]/g) || [])
+          .map((w) => w.slice(1, -1))
+          .filter((w) => w && !REGEX_UNSAFE.test(w))
+      : [],
+    similarPhrases: Array.isArray(s.similarity_phrases) ? s.similarity_phrases : [],
+    score: null,
+    tts_url: null,
+  }));
+}
+
+const AZURE_NOTICE = {
+  tts: "TTS는 Azure 키 설정 후 사용 가능",
+  assessment: "발음 평가는 Azure 키 설정 후 사용 가능",
+};
+
 export default function RecordingPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -127,6 +154,10 @@ export default function RecordingPage() {
   const { publisher, subscribers, leaveSession } = useOpenVidu(); 
 
   const roomInfo = state?.roomInfo || {};
+
+  // AI 싱글 모드: 채팅 페이지에서 받은 스크립트만 사용 (방/턴 조회, 웹소켓 없음)
+  const isAiMode =
+    state?.mode === "ai" && Array.isArray(state?.scripts) && state.scripts.length > 0;
   const myUserId = state?.myUserId; // 본인 userId
   const [participants, setParticipants] = useState(state?.participants || []); // 참여자 목록
 
@@ -134,7 +165,7 @@ export default function RecordingPage() {
     console.log("[RecordingPage] 페이지 로드 - 전체 state:", state);
   }, []); // 마운트 시 1회만 실행
 
-  const TURNS = roomInfo.turnCount || 3;
+  const TURNS = isAiMode ? 1 : roomInfo.turnCount || 3;
 
   const [step, setStep] = useState(STEP.AI_TIMER);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -151,7 +182,9 @@ export default function RecordingPage() {
   const [recordingCountdown, setRecordingCountdown] = useState(10); // 녹음 카운트다운 (10초)
   const [sentenceScores, setSentenceScores] = useState({});
   const [bookmarkedSentences, setBookmarkedSentences] = useState([]);
-  const [conversations, setConversations] = useState({});
+  const [conversations, setConversations] = useState(() =>
+    isAiMode ? { 1: formatAiScripts(state.scripts) } : {},
+  );
   const [selectedTurnForReport, setSelectedTurnForReport] = useState(null);
   const [scriptError, setScriptError] = useState(null);
   const [isLoadingScript, setIsLoadingScript] = useState(false);
@@ -219,6 +252,17 @@ export default function RecordingPage() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 2500);
   }, []);
+
+  // Azure 미설정 안내는 종류별로 한 번만
+  const azureNoticeShownRef = useRef({});
+  const showAzureNoticeOnce = useCallback(
+    (key) => {
+      if (azureNoticeShownRef.current[key]) return;
+      azureNoticeShownRef.current[key] = true;
+      showToast(AZURE_NOTICE[key]);
+    },
+    [showToast],
+  );
 
   // roomId 추출
   const roomId = useMemo(() => {
@@ -545,12 +589,36 @@ export default function RecordingPage() {
       setCurrentSentenceIndex((idx) => idx + 1);
       setStep(STEP.AI_TIMER);
     } else {
-      setStep(STEP.TURN_REPORT);
+      // AI 모드는 턴이 하나뿐이라 바로 완료 화면으로
+      setStep(isAiMode ? STEP.ALL_DONE : STEP.TURN_REPORT);
     }
-  }, [currentSentenceIndex, currentTurnSentences.length]);
+  }, [currentSentenceIndex, currentTurnSentences.length, isAiMode]);
 
   // [수정] RecordRTC로 녹음 중지 및 전송
   const stopRecording = useCallback(() => {
+    // AI 모드: 녹음만 끝내고 발음 평가 업로드는 생략 (room/turn 기반 API 사용 불가)
+    if (isAiMode) {
+      const recorder = recorderRef.current;
+      recorderRef.current = null;
+      const finish = () => {
+        showAzureNoticeOnce("assessment");
+        setStep(STEP.RECORD_DONE);
+      };
+      if (!recorder) {
+        finish();
+        return;
+      }
+      recorder.stopRecording(() => {
+        try {
+          recorder.getInternalRecorder()?.stream?.getTracks().forEach((t) => t.stop());
+        } catch {
+          // ignore
+        }
+        finish();
+      });
+      return;
+    }
+
     if (!currentSentence || !currentSentence.scriptId) {
   console.error("❌ 발음 평가 실패: scriptId가 유효하지 않습니다.");
   return;
@@ -645,7 +713,7 @@ console.log(`📤 발음 평가 전송 시작`, {
         setStep(STEP.RECORD_DONE);
       }
     });
-  }, [currentSentence, roomId, currentTurn]);
+  }, [currentSentence, roomId, currentTurn, isAiMode, showAzureNoticeOnce]);
 
   const goNextTurn = () => {
     if (currentTurn >= TURNS) {
@@ -671,6 +739,10 @@ console.log(`📤 발음 평가 전송 시작`, {
   // [수정] 북마크 토글: scriptId 기준으로 동작하도록 수정
   const handleBookmarkToggle = useCallback(
     async (id, isBookmarked) => {
+      if (isAiMode) {
+        showToast("AI 모드 문장 저장은 아직 지원되지 않아요");
+        return;
+      }
       try {
         // id는 UI에서 넘어온 값 (보통 sentence.id = order_no일 가능성 높음)
         // currentTurnSentences에서 해당 문장의 진짜 scriptId 찾기
@@ -717,7 +789,7 @@ console.log(`📤 발음 평가 전송 시작`, {
         alert("북마크 저장에 실패했습니다.");
       }
     },
-    [currentTurnSentences, roomId, selectedTurnForReport, currentTurn]
+    [currentTurnSentences, roomId, selectedTurnForReport, currentTurn, isAiMode, showToast]
   );
 
   const handleReady = useCallback(async () => {
@@ -853,6 +925,7 @@ console.log(`📤 발음 평가 전송 시작`, {
   // 턴 스크립트 로드
   useEffect(() => {
     const fetchTurnScripts = async () => {
+      if (isAiMode) return;
       if (conversations[currentTurn]) {
         console.log(
           `[RecordingPage] turn ${currentTurn} 스크립트 이미 로드됨`
@@ -969,7 +1042,7 @@ console.log(`📤 발음 평가 전송 시작`, {
       }
     };
     fetchTurnScripts();
-  }, [currentTurn, roomId, conversations, participants]);
+  }, [currentTurn, roomId, conversations, participants, isAiMode]);
 
   // 메인 타이머 및 자동 흐름 제어
   useEffect(() => {
@@ -1065,6 +1138,7 @@ console.log(`📤 발음 평가 전송 시작`, {
             setStep(STEP.RECORD_TIMER);
           });
       } else {
+        if (isAiMode) showAzureNoticeOnce("tts");
         timerRef.current = setTimeout(
           () => setStep(STEP.RECORD_TIMER),
           AI_PLAYING_MS
@@ -1106,6 +1180,8 @@ console.log(`📤 발음 평가 전송 시작`, {
     startRecording,
     stopRecording,
     goNextSentence,
+    isAiMode,
+    showAzureNoticeOnce,
   ]);
 
   useEffect(() => {
@@ -1309,6 +1385,16 @@ console.log(`📤 발음 평가 전송 시작`, {
           </div>
         );
       case STEP.ALL_DONE:
+        if (isAiMode) {
+          return (
+            <BottomAllDone
+              onRestart={restart}
+              onComplete={() => navigate("/main", { replace: true })}
+              isHost
+              completeLabel="메인으로"
+            />
+          );
+        }
         return (
           <BottomAllDone onRestart={restart} onComplete={handleMiniGameStart} isHost={amIHost} />
         );
@@ -1320,6 +1406,7 @@ console.log(`📤 발음 평가 전송 시작`, {
   return (
     <>
       {/* 📊 실시간 학습 현황 패널 추가 (드래그/최소화 기능) */}
+      {!isAiMode && (
       <div 
         className={`${styles.StatusPanel} ${isDragging ? styles.Dragging : ''} ${isMinimized ? styles.Minimized : ''}`}
         style={{ 
@@ -1388,6 +1475,7 @@ console.log(`📤 발음 평가 전송 시작`, {
           );
         })}
       </div>
+      )}
 
       {/* 👇 소리 재생용 컴포넌트 추가 (음소거 상태 전달) */}
       {subscribers.map((sub, i) => (

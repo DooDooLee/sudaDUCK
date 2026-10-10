@@ -1,5 +1,6 @@
 package com.example.DuckDuck.domain.ai.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,8 +8,15 @@ import com.example.DuckDuck.domain.ai.dto.GptScriptResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +26,23 @@ public class GptService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${gms.token}")
+    // GMS 프록시 종료로 사용 안 함 (설정 없어도 기동되도록 기본값)
+    @Value("${gms.token:}")
     private String gmsToken;
 
-    private final String GMS_URL = "https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions";
+    @Value("${openai.api.key}")
+    private String openAiApiKey;
+
+    @Value("${openai.model:gpt-4o-mini}")
+    private String model;
+
+    // 부하 테스트 때 mock 서버로 돌릴 수 있도록 base URL 을 설정으로 뺀다
+    @Value("${openai.api.base-url:https://api.openai.com}")
+    private String openAiBaseUrl;
+
+    private String chatCompletionsUrl() {
+        return openAiBaseUrl + "/v1/chat/completions";
+    }
 
     /**
      * 방 생성 시 주제 추천
@@ -246,17 +267,17 @@ public class GptService {
     public String callGptRaw(String prompt, Double temperature) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + gmsToken);
+        headers.set("Authorization", "Bearer " + openAiApiKey);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("model", "gpt-4o-mini");
+        body.put("model", model);
         body.put("messages", List.of(Map.of("role", "user", "content", prompt)));
         if (temperature != null) {
             body.put("temperature", temperature);
         }
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<Map> response = restTemplate.postForEntity(GMS_URL, entity, Map.class);
+        ResponseEntity<Map> response = restTemplate.postForEntity(chatCompletionsUrl(), entity, Map.class);
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
@@ -282,5 +303,52 @@ public class GptService {
         String extracted = content.substring(startIndex, endIndex + 1);
         log.debug("JSON 추출 완료: {}", extracted);
         return extracted;
+    }
+
+    /**
+     * GPT 스트리밍 호출 (stream=true)
+     * - 응답 InputStream을 한 줄씩 읽어서 조각(delta.content)마다 onToken 호출
+     * - 호출한 쓰레드는 스트림이 끝날 때까지 블로킹됨
+     * @return 전체 응답 텍스트
+     */
+    public String streamChat(List<Map<String, String>> messages, Consumer<String> onToken) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("model", model);
+        body.put("messages", messages);
+        body.put("stream", true);
+
+        RequestCallback requestCallback = request -> {
+            request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            request.getHeaders().setAccept(List.of(MediaType.TEXT_EVENT_STREAM));
+            request.getHeaders().set("Authorization", "Bearer " + openAiApiKey);
+            objectMapper.writeValue(request.getBody(), body);
+        };
+
+        ResponseExtractor<String> responseExtractor = response -> {
+            StringBuilder full = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(response.getBody(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (!line.startsWith("data: ")) {
+                        continue;
+                    }
+                    String data = line.substring(6).trim();
+                    if ("[DONE]".equals(data)) {
+                        break;
+                    }
+                    JsonNode content = objectMapper.readTree(data).path("choices").path(0).path("delta").path("content");
+                    if (content.isMissingNode() || content.isNull() || content.asText().isEmpty()) {
+                        continue;
+                    }
+                    String text = content.asText();
+                    full.append(text);
+                    onToken.accept(text);
+                }
+            }
+            return full.toString();
+        };
+
+        return restTemplate.execute(chatCompletionsUrl(), HttpMethod.POST, requestCallback, responseExtractor);
     }
 }

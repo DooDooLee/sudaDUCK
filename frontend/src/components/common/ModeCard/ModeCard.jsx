@@ -55,7 +55,8 @@ export default function ModeCard({
   }
 
   // 이미지 및 특수 효과 적용 여부 판단 (중앙에 있을 때만 적용)
-  const isSpecialVariant = (variant === "together" || variant === "mypage") && isActive;
+  const isSpecialVariant =
+    (variant === "practice" || variant === "together" || variant === "mypage") && isActive;
 
   const duckClassName = isSpecialVariant
       ? `${styles.Duck} ${styles.DuckTogether}`
@@ -73,10 +74,7 @@ export default function ModeCard({
       className={styles.CardWrap}
       onMouseEnter={() => {
         setHovered(true);
-        // 연습 모드는 tap 사운드 재생 안 함
-        if (variant !== "practice") {
-          playTapSound();
-        }
+        if (!disabled) playTapSound();
       }}
       onMouseLeave={() => setHovered(false)}
     >

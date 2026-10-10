@@ -1,0 +1,46 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: chat-webflux
+  config:
+    # ai-chat/ 디렉터리의 .env 를 읽는다 (gitignore). 도커에서는 환경변수로 대신 넘긴다.
+    import: optional:file:./.env[.properties]
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+openai:
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+  api-key: ${OPENAI_API_KEY:}
+  model: ${OPENAI_MODEL:gpt-4o-mini}
+  response-timeout: 60s
+  # 첫 토큰부터 마지막 토큰까지 전체 상한
+  stream-timeout: 60s
+  # Reactor Netty 커넥션 풀 상한. 기본값 500이라 동시 1000명 테스트에서 모자란다.
+  max-connections: 2000
+  retry-max-attempts: 3
+  retry-backoff: 1s
+
+jwt:
+  # A 와 같은 키여야 A 에서 받은 토큰이 B 에서도 통한다
+  secret: ${JWT_SECRET}
+
+chat:
+  session-ttl: 30m
+  history-limit: 20
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics
+  metrics:
+    tags:
+      application: chat-webflux
+
+logging:
+  level:
+    com.sudaduck.aichat: INFO

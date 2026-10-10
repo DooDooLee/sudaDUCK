@@ -1,6 +1,6 @@
 import styles from './BottomAllDone.module.css';
 
-export default function BottomAllDone({ onRestart, onComplete, isHost }) {
+export default function BottomAllDone({ onRestart, onComplete, isHost, completeLabel }) {
   return (
     <div className={styles.container} aria-live="polite">
       <div className={styles.iconCircle}>
@@ -30,7 +30,7 @@ export default function BottomAllDone({ onRestart, onComplete, isHost }) {
               opacity: isHost ? 1 : 0.6
             }}
           >
-            {isHost ? '모두 복습게임 시작' : '방장이 시작할 때까지 대기'}
+            {completeLabel || (isHost ? '모두 복습게임 시작' : '방장이 시작할 때까지 대기')}
           </button>
         </div>
       </div>

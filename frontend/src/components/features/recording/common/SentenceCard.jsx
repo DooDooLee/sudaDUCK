@@ -10,6 +10,7 @@ export default function SentenceCard({
   korean = '나는 카페에서 아르바이트를 했는데, 정말 힘들었어요.',
   english = 'I worked at a coffee shop, and it was really tough.',
   blankWords = [],
+  similarPhrases = [],
   score = null,
   averageScore = null,
   isActive = false,
@@ -317,6 +318,18 @@ export default function SentenceCard({
           </div>
           <p className={styles.text}>{getDisplayEnglish()}</p>
         </div>
+
+        {/* 비슷한 표현 (AI 모드에서만 전달됨, 녹음 중에는 숨김) */}
+        {similarPhrases.length > 0 && cardState !== 'record_timer' && cardState !== 'recording' && (
+          <div className={`${styles.section} ${styles.similarSection}`}>
+            <span className={styles.label}>비슷한 표현</span>
+            <ul className={styles.similarList}>
+              {similarPhrases.map((phrase, idx) => (
+                <li key={idx} className={styles.similarItem}>{phrase}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
