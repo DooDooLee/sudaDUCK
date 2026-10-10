@@ -81,7 +81,7 @@
   "panels": [
     {
       "type": "timeseries",
-      "title": "초당 처리 요청 · 기존 vs 개선",
+      "title": "초당 처리 요청 (기존 vs 개선)",
       "description": "AI 채팅 API(/api/v1/ai-chat/**) 처리 완료 건수의 초당 비율.",
       "datasource": {
         "type": "prometheus",
@@ -114,7 +114,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -195,7 +195,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -276,7 +276,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -344,7 +344,7 @@
     },
     {
       "type": "timeseries",
-      "title": "기존 @Async 스레드 풀 (A) · 활성 스레드 / 큐 / 풀 크기",
+      "title": "기존 @Async 스레드 풀 (A): 활성 스레드, 대기 큐, 풀 크기",
       "description": "A 의 GPT 호출 비동기 풀 (core 5, max 10, queue 100, 초과 시 CallerRuns).",
       "datasource": {
         "type": "prometheus",
@@ -377,7 +377,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -445,7 +445,7 @@
     },
     {
       "type": "timeseries",
-      "title": "JVM 스레드 수 · 기존 vs 개선",
+      "title": "JVM 스레드 수 (기존 vs 개선)",
       "description": "살아 있는 JVM 스레드 수.",
       "datasource": {
         "type": "prometheus",
@@ -478,7 +478,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -559,7 +559,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -640,7 +640,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -721,7 +721,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
@@ -822,7 +822,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "기존 (톰캣 · @Async)"
+                "value": "기존 (톰캣, @Async)"
               }
             ]
           },
